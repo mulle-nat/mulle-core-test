@@ -175,3 +175,22 @@ jobs:
         name: Arch-packages
         path: |
               ${{ env.ARCH_PACKAGE }}
+              
+  upload-to-release:
+    needs: [build]
+    if: github.event_name == 'release' || github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Linux-packages
+          path: ./release-files
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./release-files/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
