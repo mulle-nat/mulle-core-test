@@ -13,8 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
-
+        os: [ubuntu-latest]
+        arch: [x86_64, aarch64]  # not real hardware, just a variable
     steps:
     - name: Set MULLE_HOSTNAME
       run: |
@@ -68,9 +68,9 @@ jobs:
             mkdir -p package
             cd package
             cmake --version
-            cmake -DCMAKE_BUILD_TYPE="Release" ..
+            cmake -DCMAKE_BUILD_TYPE="Release" -DCMAKE_SYSTEM_PROCESSOR=${{ matrix.arch }} ..
             cpack -G DEB
-            package="mulle-core_${MULLE_CORE_VERSION}-`arch`.deb"
+            package="mulle-core_${MULLE_CORE_VERSION}-${{ matrix.arch }}.deb"
             mv *.deb "${package}"
             echo "DEB_PACKAGE=package/${package}" >> $GITHUB_ENV
 
@@ -79,7 +79,7 @@ jobs:
             mkdir -p package
             cd package
             cpack -G RPM
-            package="mulle-core_${MULLE_CORE_VERSION}-`arch`.rpm"
+            package="mulle-core_${MULLE_CORE_VERSION}-${{ matrix.arch }}.rpm"
             mv *.rpm "${package}"
             echo "RPM_PACKAGE=package/${package}" >> $GITHUB_ENV
 
