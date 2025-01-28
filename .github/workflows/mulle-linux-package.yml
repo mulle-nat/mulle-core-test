@@ -49,6 +49,11 @@ jobs:
     - name: Install rpmbuild
       run:  sudo apt-get update && sudo apt-get install -y rpm
 
+    - name: Install ARM64 toolchain
+      if: matrix.arch == 'aarch64'
+      run: |
+        sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+              
     - name: Install mulle-project
       run:  |
             mulle-fetch 'https://github.com/mulle-nat/mulle-project/archive/latest.tar.gz' \
@@ -68,7 +73,10 @@ jobs:
             mkdir -p package
             cd package
             cmake --version
-            cmake -DCMAKE_BUILD_TYPE="Release" -DCMAKE_SYSTEM_PROCESSOR=${{ matrix.arch }} ..
+            cmake -DCMAKE_BUILD_TYPE="Release" \
+                  -DCMAKE_SYSTEM_PROCESSOR=${{ matrix.arch }} \
+                  -DCMAKE_C_COMPILER=${{ matrix.arch == 'aarch64' && 'aarch64-linux-gnu-gcc' || 'gcc' }} \
+                  -DCMAKE_CXX_COMPILER=${{ matrix.arch == 'aarch64' && 'aarch64-linux-gnu-g++' || 'g++' }} ..
             cpack -G DEB
             package="mulle-core_${MULLE_CORE_VERSION}-${{ matrix.arch }}.deb"
             mv *.deb "${package}"
