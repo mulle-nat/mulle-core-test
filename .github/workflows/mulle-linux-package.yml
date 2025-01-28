@@ -86,7 +86,7 @@ jobs:
     - name: Upload packages (ZIP)
       uses: actions/upload-artifact@v4
       with:
-        name: Linux-packages
+        name: Linux-packages-${{ matrix.arch }}
         path: |
               ${{ env.RPM_PACKAGE }}
               ${{ env.DEB_PACKAGE }}
@@ -172,7 +172,7 @@ jobs:
     - name: Upload packages (ZIP)
       uses: actions/upload-artifact@v4
       with:
-        name: Arch-packages
+        name: Arch-packages-${{ matrix.arch }}
         path: |
               ${{ env.ARCH_PACKAGE }}
               
@@ -184,7 +184,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: Linux-packages
+          name: Linux-packages-${{ matrix.arch }}
           path: ./release-files
 
       - name: Upload to Release
